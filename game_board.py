@@ -2,6 +2,7 @@ from sys import exit
 import board_creator
 import pygame
 import time
+from pieces import *
 
 # initializing pygame settings
 pygame.init()
@@ -20,10 +21,15 @@ WHITE = (255, 255, 255)
 
 # initializing the board
 Board = board_creator.reset_board()
+white_king = "73"
+black_king = "03"
+selected = None
+turn = True
 
 # creating clock object
 clock = pygame.time.Clock()
-selected = None
+
+
 # running the game
 while True:
     for event in pygame.event.get():
@@ -38,6 +44,7 @@ while True:
             x, y = pygame.mouse.get_pos()
             x_pos = (x-offset)//(length)
             y_pos = (y-offset)//(length)
+            clicked = str(y_pos) + str(x_pos)
 
             # checking if the position is valid
             if y_pos > 7 or y_pos<0 or x_pos<0 or x_pos > 7:
@@ -45,14 +52,17 @@ while True:
 
             # checking if selected
             elif not selected:
-                selected = str(y_pos) + str(x_pos)
-            
-            # checking if not selected
-            else:
-                temp = str(y_pos) + str(x_pos)
-                Board[temp], Board[selected] = Board[selected], None
-                selected = None
+                print(turn, turn and Board[clicked] in team["white"], not turn, Board[clicked] in team["black"])
+                if turn and Board[clicked] in team["white"]:
+                    selected = str(y_pos) + str(x_pos)
+                elif not turn and Board[clicked] in team["black"]:
+                    selected = str(y_pos) + str(x_pos)
 
+            # checking if not selected
+            else:        
+                Board[clicked], Board[selected] = Board[selected], None
+                selected = None
+                turn = not turn
     flag = True
     for i in range(8):
         flag = not flag
@@ -63,7 +73,7 @@ while True:
             else:
                 pygame.draw.rect(screen, WHITE, ((i*length)+offset,(j*length)+offset, length, length))
             if selected == str(j) + str(i):
-                    pygame.draw.rect(screen, pygame.Color(255, 0, 0, 50), ((i*length)+offset,(j*length)+offset, length, length))
+                    pygame.draw.rect(screen, pygame.Color((173, 216, 230, 128)), ((i*length)+offset,(j*length)+offset, length, length))
             if Board[str(j) + str(i)]:
                 screen.blit(Board[str(j) + str(i)], ((i*length)+2*offset,(j*length)+2*offset))
     pygame.display.update()
