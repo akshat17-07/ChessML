@@ -1,12 +1,13 @@
 from sys import exit
 import board_creator
+import check_moves
 import pygame
 import time
 from pieces import *
 
 # initializing pygame settings
 pygame.init()
-board_size = (1200, 800)
+board_size = (850, 800)
 screen = pygame.display.set_mode(board_size)
 pygame.display.set_caption("Chess")
 screen.fill("grey")
@@ -59,10 +60,13 @@ while True:
                     selected = str(y_pos) + str(x_pos)
 
             # checking if not selected
-            else:        
-                Board[clicked], Board[selected] = Board[selected], None
+            elif check_moves.valid_move(Board, (selected, clicked), turn):
+                Board[clicked], Board[selected] = Board[selected], None 
                 selected = None
                 turn = not turn
+            elif clicked == selected:
+                selected = None
+
     flag = True
     for i in range(8):
         flag = not flag
